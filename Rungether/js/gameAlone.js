@@ -100,10 +100,10 @@ function World() {
 		
 		
 		const loader = new THREE.GLTFLoader();
-		loader.load('./model3/scene.gltf', function(gltf){
+		loader.load('./model/scene.gltf', function(gltf){
 		  running = gltf.scene.children[0];
-		  running.scale.set(500,-400,500);
-		  running.position.set(0,0,-4000);
+		  running.scale.set(0.3,0.3,0.3);
+		  running.position.set(5,5,-3200);
 		  scene.add(gltf.scene);
 		  runningCharacter = running;
 		  console.log(typeof(runningCharacter));
