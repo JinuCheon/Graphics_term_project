@@ -203,8 +203,8 @@ function addHero(){
 	heroSphere.position.x=currentLane;
 }
 function addWorld(){
-	var sides=50;
-	var tiers=50;
+	var sides=27;
+	var tiers=15;
 	var sphereGeometry = new THREE.SphereGeometry( worldRadius, sides,tiers);
 	
 	var vertexIndex;
@@ -244,8 +244,8 @@ function addWorld(){
 	
 	// Create the water effect
 	water = new THREE.Water(renderer, camera, scene, {
-		textureWidth: 512, 
-		textureHeight: 512,
+		textureWidth: 1024, 
+		textureHeight: 1024,
 		waterNormals: waterNormals,
 		alpha: 	1.0,
 		sunDirection: sun.position.normalize(),
