@@ -122,66 +122,8 @@ function World() {
 			createRowOfTrees(i * -3000, treePresenceProb, 0.6, maxTreeSize);
 		}
 
-		/**
-		 * 천진우 start
-		 */
-
-		//water shader 관련 데이터 로드
-		// Load textures		
-		var waterNormals = new THREE.ImageUtils.loadTexture('water/assets/img/waternormals.jpg');
-		waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping; 
-
-		//water 객체 생성
-		var water = new THREE.Water(renderer, camera, scene, {
-			textureWidth: 512, 
-			textureHeight: 512,
-			waterNormals: waterNormals,
-			alpha: 	1.0,
-			sunDirection: light.position.normalize(),
-			sunColor: 0xffffff,
-			waterColor: 0x001e0f,
-			distortionScale: 50.0
-		});
-		var aMeshMirror = new THREE.Mesh(
-			new THREE.PlaneBufferGeometry(1000000, 1000000, 10, 10), //바다 크기
-			water.material
-		);
-		aMeshMirror.add(water);
-		aMeshMirror.rotation.x = - Math.PI * 0.5;
-		scene.add(aMeshMirror);
-
-		//하늘
-		var aCubeMap = THREE.ImageUtils.loadTextureCube([
-			'water/assets/img/px.jpg',
-			'water/assets/img/nx.jpg',
-			'water/assets/img/py.jpg',
-			'water/assets/img/ny.jpg',
-			'water/assets/img/pz.jpg',
-			'water/assets/img/nz.jpg'
-		]);
-		aCubeMap.format = THREE.RGBFormat;
-
-		var aShader = THREE.ShaderLib['cube'];
-		aShader.uniforms['tCube'].value = aCubeMap;
-
-		var aSkyBoxMaterial = new THREE.ShaderMaterial({
-			fragmentShader: aShader.fragmentShader,
-			vertexShader: aShader.vertexShader,
-			uniforms: aShader.uniforms,
-			depthWrite: false,
-			side: THREE.BackSide
-		});
-
-		var aSkybox = new THREE.Mesh(
-			new THREE.BoxGeometry(1000000, 1000000, 1000000),
-			aSkyBoxMaterial
-		);
-		
-		scene.add(aSkybox);
-
-		/**
-		 * 천진우 end
-		 */
+		//천진우
+		//water shader 관련 데이터 로드 
 
 		// The game is paused to begin with and the game is not over.
 		gameOver = false;

@@ -7,6 +7,34 @@
 		<script type="text/javascript" src="js/OrbitControls.js"></script>	
         <script type="text/javascript" src="js/gameAlone.js"></script>
 		<link href="style.css" rel="stylesheet">
+
+		<!-- External libraries -->
+		<!-- <script src="water/assets/libs/three.min.js"></script> -->
+		
+		<script src="water/assets/libs/RequestAnimationFrame.js"></script>
+		<script src="water/assets/libs/jquery.min.js"></script>
+		<script src="water/assets/libs/three/OrbitControls.js"></script>
+		<script src="water/assets/libs/FastBlur.js"></script>
+		<script src="water/assets/libs/konami.js"></script>
+		
+		<!-- Terrain generator -->
+		<script src="water/assets/libs/terrain-generator/mersenne-twister.js"></script>
+		<script src="water/assets/libs/terrain-generator/blur.js"></script>
+		<script src="water/assets/libs/terrain-generator/destructure.js"></script>
+		<script src="water/assets/libs/terrain-generator/mountains.js"></script>
+		<script src="water/assets/libs/terrain-generator/perlinnoise.js"></script>
+		<script src="water/assets/libs/terrain-generator/terraingen.js"></script>
+		<script src="water/assets/libs/terrain-generator/circle.js"></script>
+		
+		<!-- Water shader -->
+		<!-- <script src="water/assets/js/water-material.js"></script> -->
+		<script src="water/assets/libs/three/Water.js"></script>
+		
+		<!-- Demo files -->
+		<script src="water/assets/js/window.js"></script>
+		<script src="water/assets/js/demo.js"></script>
+		<script src="water/assets/js/main.js"></script>
+		<link href="water/assets/css/style.css" rel="stylesheet">
 	</head>
 	<style>
         body {
@@ -17,10 +45,10 @@
 	<body>
 		<div class="panel">
 
-            <audio autoplay
+            <!-- <audio autoplay
                    loop
                    src="audio/chasing-victory-main-9448.mp3"
-                   type="audio/mpeg"></audio>
+                   type="audio/mpeg"></audio> -->
 
 			<div class="game-title">
 				<div class="title">RUNGETHER</div>
@@ -34,7 +62,7 @@
                     <td><font color="white">Up:</font></td>
                     <td><font color="white">Jump</font></td>
                 </tr>
-				<tr>
+				<tr> 
 					<td>&nbsp;</td>
 				</tr>
                 <tr>
