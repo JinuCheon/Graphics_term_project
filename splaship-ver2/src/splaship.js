@@ -65,7 +65,7 @@ function createScene(){
     sceneHeight=window.innerHeight;
     scene = new THREE.Scene();//the 3d scene
     scene.fog = new THREE.FogExp2( 0xf0fff0, 0.14 );
-    camera = new THREE.PerspectiveCamera( 60, sceneWidth / sceneHeight, 0.1, 5000000 );//perspective camera
+    camera = new THREE.PerspectiveCamera( 70, sceneWidth / sceneHeight, 0.1, 5000000 );//perspective camera
     renderer = new THREE.WebGLRenderer({alpha:true});//renderer with transparent backdrop
     renderer.setClearColor(0x424242, 1); 
     renderer.shadowMap.enabled = true;//enable shadow
