@@ -574,11 +574,18 @@ function render(){
     renderer.render(scene, camera);//draw
 }
 function gameOver () {
-	cancelAnimationFrame( animationFrame );	
+	cancelAnimationFrame( animationFrame );
+
+	if(scoreList == null) {
+		window.alert("Cannot connect to server.");
+		window.location.reload(window.location.href);
+	}
 
 	if(score > scoreList[9].score) {
-		nickName = window.prompt(`point: ${score}\ntop 10 달성. 닉네임을 입력하세요`, "Unknown");
-		setNewScore(nickName, score);
+		var nickname = window.prompt(`point: ${score}\ntop 10 달성. 닉네임을 입력하세요`, "Unknown");
+		if(nickname != null) {
+			setNewScore(nickname	, score);
+		}
 	} else {
 		window.alert("다시 시도해보세요!");
 	}
