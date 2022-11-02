@@ -46,12 +46,14 @@ var water;
 var splashGap=40;
 
 var flag;
+var animationFrame;
+var continueAnimate = true;
+
+var scoreList;
 
 function init() {
-	// set up the scene
 	createScene();
-
-	//call game loop
+	getTopScore();
 	update();
 }
 
@@ -91,30 +93,36 @@ function createScene(){
 	camera.position.y = 3.5;
 	orbitControl = new THREE.OrbitControls( camera, renderer.domElement );//helper to rotate around in scene
 	orbitControl.addEventListener( 'change', render );
-	// orbitControl.enableDamping = true;
-	// orbitControl.dampingFactor = 0.8;
-	// orbitControl.noKeys = true;
-	// orbitControl.noPan = true;
-	// orbitControl.enableZoom = false;
-	// orbitControl.minPolarAngle = 1.1;
-	// orbitControl.maxPolarAngle = 1.1;
-	// orbitControl.minAzimuthAngle = -0.2;
-	// orbitControl.maxAzimuthAngle = 0.2;
+	orbitControl.noKeys = true;
+	orbitControl.noPan = true;
+	orbitControl.enableZoom = false;
 	
 	window.addEventListener('resize', onWindowResize, false);//resize callback
 
 	document.onkeydown = handleKeyDown;
 	
 	scoreText = document.createElement('div');
+	scoreText.style.color='white'
+	scoreText.style.fontSize='30px'
+	scoreText.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
 	scoreText.style.position = 'absolute';
-	//text2.style.zIndex = 1;    // if you still don't see the label, try uncommenting this
 	scoreText.style.width = 100;
 	scoreText.style.height = 100;
-	//scoreText.style.backgroundColor = "blue";
 	scoreText.innerHTML = "0";
-	scoreText.style.top = 10 + 'px';
+	scoreText.style.top = 30 + 'px';
 	scoreText.style.left = 100 + 'px';
 	document.body.appendChild(scoreText);
+
+	rankText = document.createElement('div');
+	rankText.style.color='white'
+	rankText.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+	rankText.style.position = 'absolute';
+	rankText.style.width = 100;
+	rankText.style.height = 100;
+	rankText.innerHTML = "<p>scoreboard</p>";
+	rankText.style.top = 100 + 'px';
+	rankText.style.left = 100 + 'px';
+	document.body.appendChild(rankText);
 	
 }
 
@@ -431,6 +439,8 @@ function tightenTree(vertices,sides,currentTier){
 }
 
 function update(){
+	if(!continueAnimate) return;
+
     rollingGroundSphere.rotation.x += rollingSpeed;
     if(heroSphere.position.y<=heroBaseY){
     	jumping=false;
@@ -459,8 +469,8 @@ function update(){
 		}
 
     	if(!hasCollided){
-			score+=2*treeReleaseInterval;
-			scoreText.innerHTML=score.toString();
+			score+=parseInt(2*treeReleaseInterval);
+			scoreText.innerHTML=`Your Score : ` + score.toString();
 		}
     }
 	water.material.uniforms.time.value += 1.0 / 100.0;
@@ -476,7 +486,7 @@ function update(){
    }
    else flag++;
     render();
-	requestAnimationFrame(update);//request next update
+	animationFrame = requestAnimationFrame(update);//request next update
 }
 function doTreeLogic(){
 	var oneTree;
@@ -490,8 +500,10 @@ function doTreeLogic(){
 		}else{//check collision
 			if(treePos.distanceTo(heroSphere.position)<=0.6){ //장애물 부딪히는 감도
 				console.log("hit");
+				continueAnimate = false;
 				hasCollided=true;
 				explode();
+				gameOver();
 			}
 		}
 	});
@@ -562,9 +574,17 @@ function render(){
     renderer.render(scene, camera);//draw
 }
 function gameOver () {
-  //cancelAnimationFrame( globalRenderID );
-  //window.clearInterval( powerupSpawnIntervalID );
+	cancelAnimationFrame( animationFrame );	
+
+	if(score > scoreList[9].score) {
+		nickName = window.prompt(`point: ${score}\ntop 10 달성. 닉네임을 입력하세요`, "Unknown");
+		setNewScore(nickName, score);
+	} else {
+		window.alert("다시 시도해보세요!");
+	}
+	window.location.reload(window.location.href);
 }
+
 function onWindowResize() {
 	//resize & align
 	sceneHeight = window.innerHeight;
