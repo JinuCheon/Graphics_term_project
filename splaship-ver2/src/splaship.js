@@ -18,7 +18,7 @@ var heroRadius=0.2;
 var sphericalHelper;
 var pathAngleValues;
 var heroBaseY=1.8;
-var bounceValue=0.05;
+var bounceValue=0.1;
 var gravity=0.005;
 var leftLane=-1;
 var rightLane=1;
@@ -32,7 +32,10 @@ var lastTreeReleaseTime=0;
 var treesInPath;
 var treesPool;
 var particleGeometry;
-var particleCount=20;
+var particleCount=70;
+var splashGeometry;
+var splashCount = 15;
+var splashParticles;
 var explosionPower =1.06;
 var particles;
 var scoreText;
@@ -40,6 +43,9 @@ var score;
 var hasCollided;
 var light;
 var water;
+var splashGap=40;
+
+var flag;
 
 function init() {
 	// set up the scene
@@ -52,6 +58,7 @@ function init() {
 function createScene(){
 	hasCollided=false;
 	score=0;
+	flag=0;
 	treesInPath=[];
 	treesPool=[];
 	clock=new THREE.Clock();
@@ -64,7 +71,7 @@ function createScene(){
     sceneWidth=window.innerWidth;
     sceneHeight=window.innerHeight;
     scene = new THREE.Scene();//the 3d scene
-    scene.fog = new THREE.FogExp2( 0xf0fff0, 0.14 );
+    scene.fog = new THREE.FogExp2( 0x242424, 0.14 );
     camera = new THREE.PerspectiveCamera( 70, sceneWidth / sceneHeight, 0.1, 5000000 );//perspective camera
     renderer = new THREE.WebGLRenderer({alpha:true});//renderer with transparent backdrop
     renderer.setClearColor(0x424242, 1); 
@@ -79,7 +86,7 @@ function createScene(){
 	addWorld();
 	addSky();
 	addExplosion();
-	
+	addSplash();
 	camera.position.z = 6.5;
 	camera.position.y = 3.5;
 	orbitControl = new THREE.OrbitControls( camera, renderer.domElement );//helper to rotate around in scene
@@ -148,13 +155,29 @@ function addExplosion(){
 		particleGeometry.vertices.push( vertex );
 	}
 	var pMaterial = new THREE.ParticleBasicMaterial({
-	  color: 0xfffafa,
-	  size: 0.2
+	  color: 0x6F0800,
+	  size: 0.05
 	});
 	particles = new THREE.Points( particleGeometry, pMaterial );
 	scene.add( particles );
 	particles.visible=false;
 }
+
+function addSplash(){
+	console.log("in splash!!");
+	splashGeometry = new THREE.Geometry();
+	for (var i = 0; i < splashCount; i ++ ) {
+	   var vertex = new THREE.Vector3();
+	   splashGeometry.vertices.push( vertex );
+	}
+	var sMaterial = new THREE.ParticleBasicMaterial({
+	  color: 0x04a1bf,
+	  size: 0.08
+	});
+	splashParticles = new THREE.Points( splashGeometry, sMaterial );
+	scene.add( splashParticles );
+	splashParticles.visible=false;
+ }
 
 function createTreesPool(){
 	var maxTreesInPool=10;
@@ -167,6 +190,7 @@ function createTreesPool(){
 
 function handleKeyDown(keyEvent){
 	if(jumping)return;
+	shipSplash();
 	var validMove=true;
 	if ( keyEvent.keyCode === 37) {//left
 		if(currentLane==middleLane){
@@ -190,18 +214,22 @@ function handleKeyDown(keyEvent){
 	}
 }
 function addHero(){
-	var sphereGeometry = new THREE.DodecahedronGeometry( heroRadius, 1);
+	var sphereGeometry = new THREE.TetrahedronBufferGeometry( 0.4);
 	var sphereMaterial = new THREE.MeshStandardMaterial( { color: 0xe5f2f2 ,shading:THREE.FlatShading} )
 	jumping=false;
 	heroSphere = new THREE.Mesh( sphereGeometry, sphereMaterial );
+	heroSphere.rotateX(45 * Math.PI / 180);
+    heroSphere.rotateY(45 * Math.PI / 180);
 	heroSphere.receiveShadow = true;
 	heroSphere.castShadow=true;
 	scene.add( heroSphere );
+
 	heroSphere.position.y=heroBaseY;
 	heroSphere.position.z=4.8;
 	currentLane=middleLane;
 	heroSphere.position.x=currentLane;
 }
+
 function addWorld(){
 	var sides=27;
 	var tiers=15;
@@ -249,8 +277,8 @@ function addWorld(){
 		waterNormals: waterNormals,
 		alpha: 	1.0,
 		sunDirection: sun.position.normalize(),
-		sunColor: 0xffffff,
-		waterColor: 0x001e0f,
+		sunColor: 0xf9d71c,
+		waterColor: 0x259faf,
 		distortionScale: 50.0
 	});
 
@@ -266,9 +294,9 @@ function addWorld(){
 	addWorldTrees();
 }
 function addLight(){
-	light = new THREE.HemisphereLight(0xfffafa,0x000000, .4)
+	light = new THREE.HemisphereLight(0x57b8bc,0x000000, .4)
 	scene.add(light);
-	sun = new THREE.DirectionalLight( 0xffffff, 3);
+	sun = new THREE.DirectionalLight( 0x57b8bc, 3);
 	sun.position.set(-600, 300, 600);
 	sun.castShadow = true;
 	scene.add(sun);
@@ -276,7 +304,7 @@ function addLight(){
 	sun.shadow.mapSize.width = 256;
 	sun.shadow.mapSize.height = 256;
 	sun.shadow.camera.near = 0.5;
-	sun.shadow.camera.far = 50 ;
+	sun.shadow.camera.far = 100 ;
 }
 
 
@@ -321,27 +349,40 @@ function createTree(){
 	var tiers=6;
 	var scalarMultiplier=(Math.random()*(0.25-0.1))+0.05;
 	var treeGeometry = new THREE.ConeGeometry( 0.5, 1, sides, tiers);
-	var treeMaterial = new THREE.MeshStandardMaterial( { color: 0x33ff33,shading:THREE.FlatShading  } );
+	var treeMaterial = new THREE.MeshStandardMaterial( { color: 0x242424,shading:THREE.FlatShading  } );
 	midPointVector=treeGeometry.vertices[0].clone();
 	blowUpTree(treeGeometry.vertices,sides,0,scalarMultiplier);
 	tightenTree(treeGeometry.vertices,sides,1);
-	blowUpTree(treeGeometry.vertices,sides,2,scalarMultiplier*1.1,true);
-	tightenTree(treeGeometry.vertices,sides,3);
-	blowUpTree(treeGeometry.vertices,sides,4,scalarMultiplier*1.2);
-	tightenTree(treeGeometry.vertices,sides,5);
+	//blowUpTree(treeGeometry.vertices,sides,2,scalarMultiplier*1.1,true);
+	//tightenTree(treeGeometry.vertices,sides,3);
+	//blowUpTree(treeGeometry.vertices,sides,4,scalarMultiplier*1.2);
+	//tightenTree(treeGeometry.vertices,sides,5);
 	var treeTop = new THREE.Mesh( treeGeometry, treeMaterial );
 	treeTop.castShadow=true;
 	treeTop.receiveShadow=false;
-	treeTop.position.y=0.9;
+	treeTop.position.y=0.2;
 	treeTop.rotation.y=(Math.random()*(Math.PI));
-	var treeTrunkGeometry = new THREE.CylinderGeometry( 0.1, 0.1,0.5);
-	var trunkMaterial = new THREE.MeshStandardMaterial( { color: 0x886633,shading:THREE.FlatShading  } );
-	var treeTrunk = new THREE.Mesh( treeTrunkGeometry, trunkMaterial );
-	treeTrunk.position.y=0.25;
+	//var treeTrunkGeometry = new THREE.CylinderGeometry( 0.1, 0.1,0.5);
+	//var trunkMaterial = new THREE.MeshStandardMaterial( { color: 0x886633,shading:THREE.FlatShading  } );
+	//var treeTrunk = new THREE.Mesh( treeTrunkGeometry, trunkMaterial );
+	//treeTrunk.position.y=0.25;
 	var tree =new THREE.Object3D();
-	tree.add(treeTrunk);
+	//tree.add(treeTrunk);
 	tree.add(treeTop);
 	return tree;
+}
+
+function createObstacle(){
+	const loader = new THREE.GLTFLoader();
+		loader.load('./model/scene.gltf', function(gltf){
+		  running = gltf.scene.children[0];
+		  running.scale.set(0.3,0.3,0.3);
+		  running.position.set(5,5,-3200);
+		  scene.add(gltf.scene);
+		  }, undefined, function (error) {
+			console.error(error);
+		});
+	return
 }
 function blowUpTree(vertices,sides,currentTier,scalarMultiplier,odd){
 	var vertexIndex;
@@ -425,6 +466,15 @@ function update(){
 	water.material.uniforms.time.value += 1.0 / 100.0;
     doTreeLogic();
     doExplosionLogic();
+	doSplashLogic();
+   console.log(particles);
+   console.log(splashParticles);
+   if(flag==splashGap) {
+      shipSplash();
+      flag = 0;
+      console.log("splash");
+   }
+   else flag++;
     render();
 	requestAnimationFrame(update);//request next update
 }
@@ -467,6 +517,18 @@ function doExplosionLogic(){
 	}
 	particleGeometry.verticesNeedUpdate = true;
 }
+function doSplashLogic(){
+	if(!splashParticles.visible)return;
+	for (var i = 0; i < splashCount; i ++ ) {
+	   splashGeometry.vertices[i].multiplyScalar(explosionPower);
+	}
+	if(explosionPower>1.005){
+	   explosionPower-=0.001;
+	}else{
+	   splashParticles.visible=false;
+	}
+	splashGeometry.verticesNeedUpdate = true;
+ }
 function explode(){
 	particles.position.y=2;
 	particles.position.z=4.8;
@@ -481,6 +543,20 @@ function explode(){
 	explosionPower=1.07;
 	particles.visible=true;
 }
+function shipSplash(){
+	splashParticles.position.y=2;
+	splashParticles.position.z=4.8;
+	splashParticles.position.x=heroSphere.position.x;
+	for (var i = 0; i < splashCount; i ++ ) {
+	   var vertex = new THREE.Vector3();
+	   vertex.x = -0.2+Math.random() * 0.3;
+	   vertex.y = -0.4+Math.random() * 0.3;
+	   vertex.z = -0.2+Math.random() * 0.4;
+	   splashGeometry.vertices[i]=vertex;
+	}
+	explosionPower=1.07;
+	splashParticles.visible=true;
+ }
 function render(){
 	water.render();
     renderer.render(scene, camera);//draw
