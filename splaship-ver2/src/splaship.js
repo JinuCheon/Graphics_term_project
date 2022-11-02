@@ -11,7 +11,7 @@ var ground;
 var orbitControl;
 var rollingGroundSphere;
 var heroSphere;
-var rollingSpeed=0.01;
+var rollingSpeed=0.005;
 var heroRollingSpeed;
 var worldRadius=26;
 var heroRadius=0.2;
@@ -71,7 +71,7 @@ function createScene(){
     sceneWidth=window.innerWidth;
     sceneHeight=window.innerHeight;
     scene = new THREE.Scene();//the 3d scene
-    scene.fog = new THREE.FogExp2( 0x242424, 0.14 );
+    scene.fog = new THREE.FogExp2( 0xFF757575, 0.2 );
     camera = new THREE.PerspectiveCamera( 70, sceneWidth / sceneHeight, 0.1, 5000000 );//perspective camera
     renderer = new THREE.WebGLRenderer({alpha:true});//renderer with transparent backdrop
     renderer.setClearColor(0x424242, 1); 
@@ -215,7 +215,7 @@ function handleKeyDown(keyEvent){
 }
 function addHero(){
 	var sphereGeometry = new THREE.TetrahedronBufferGeometry( 0.4);
-	var sphereMaterial = new THREE.MeshStandardMaterial( { color: 0xe5f2f2 ,shading:THREE.FlatShading} )
+	var sphereMaterial = new THREE.MeshStandardMaterial( { color: 0xff0001 ,shading:THREE.FlatShading} )
 	jumping=false;
 	heroSphere = new THREE.Mesh( sphereGeometry, sphereMaterial );
 	heroSphere.rotateX(45 * Math.PI / 180);
@@ -349,7 +349,7 @@ function createTree(){
 	var tiers=6;
 	var scalarMultiplier=(Math.random()*(0.25-0.1))+0.05;
 	var treeGeometry = new THREE.ConeGeometry( 0.5, 1, sides, tiers);
-	var treeMaterial = new THREE.MeshStandardMaterial( { color: 0x242424,shading:THREE.FlatShading  } );
+	var treeMaterial = new THREE.MeshStandardMaterial( { color: 0xFF616161,shading:THREE.FlatShading  } );
 	midPointVector=treeGeometry.vertices[0].clone();
 	blowUpTree(treeGeometry.vertices,sides,0,scalarMultiplier);
 	tightenTree(treeGeometry.vertices,sides,1);
@@ -443,7 +443,7 @@ function update(){
 		levelClock.start();
 		console.log("level up")
 		treeReleaseInterval -= 0.03;
-		rollingSpeed += 0.0006
+		rollingSpeed += 0.0002
 		console.log(treeReleaseInterval);
 		console.log(rollingSpeed);
 	}
@@ -545,11 +545,11 @@ function explode(){
 }
 function shipSplash(){
 	splashParticles.position.y=2;
-	splashParticles.position.z=4.8;
+	splashParticles.position.z=5;
 	splashParticles.position.x=heroSphere.position.x;
 	for (var i = 0; i < splashCount; i ++ ) {
 	   var vertex = new THREE.Vector3();
-	   vertex.x = -0.2+Math.random() * 0.3;
+	   vertex.x = -0.2+Math.random() * 0.4;
 	   vertex.y = -0.4+Math.random() * 0.3;
 	   vertex.z = -0.2+Math.random() * 0.4;
 	   splashGeometry.vertices[i]=vertex;
