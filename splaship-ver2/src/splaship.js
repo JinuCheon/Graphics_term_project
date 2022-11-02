@@ -11,13 +11,13 @@ var ground;
 var orbitControl;
 var rollingGroundSphere;
 var heroSphere;
-var rollingSpeed=0.01;
+var rollingSpeed=0.005;
 var heroRollingSpeed;
 var worldRadius=26;
 var heroRadius=0.2;
 var sphericalHelper;
 var pathAngleValues;
-var heroBaseY=1.8;
+var heroBaseY=1.6;
 var bounceValue=0.1;
 var gravity=0.005;
 var leftLane=-1;
@@ -71,7 +71,7 @@ function createScene(){
     sceneWidth=window.innerWidth;
     sceneHeight=window.innerHeight;
     scene = new THREE.Scene();//the 3d scene
-    scene.fog = new THREE.FogExp2( 0x242424, 0.14 );
+    //scene.fog = new THREE.FogExp2( 0x242424, 0.14 );
     camera = new THREE.PerspectiveCamera( 70, sceneWidth / sceneHeight, 0.1, 5000000 );//perspective camera
     renderer = new THREE.WebGLRenderer({alpha:true});//renderer with transparent backdrop
     renderer.setClearColor(0x424242, 1); 
@@ -215,13 +215,31 @@ function handleKeyDown(keyEvent){
 }
 function addHero(){
 	var sphereGeometry = new THREE.TetrahedronBufferGeometry( 0.4);
-	var sphereMaterial = new THREE.MeshStandardMaterial( { color: 0xe5f2f2 ,shading:THREE.FlatShading} )
+	var sphereMaterial = new THREE.MeshStandardMaterial( { color: 0xff0001  ,shading:THREE.FlatShading} )
 	jumping=false;
 	heroSphere = new THREE.Mesh( sphereGeometry, sphereMaterial );
 	heroSphere.rotateX(45 * Math.PI / 180);
     heroSphere.rotateY(45 * Math.PI / 180);
 	heroSphere.receiveShadow = true;
 	heroSphere.castShadow=true;
+
+	const reactorSocketGeometry = new THREE.CylinderBufferGeometry(0.08, 0.08, 0.1, 16);
+    const reactorSocketMaterial = new THREE.MeshBasicMaterial({ color: 0x99aacc });
+
+	const reactorSocket1 = new THREE.Mesh(reactorSocketGeometry, reactorSocketMaterial);
+    const reactorSocket2 = new THREE.Mesh(reactorSocketGeometry, reactorSocketMaterial);
+	
+	heroSphere.add(reactorSocket1);
+    heroSphere.add(reactorSocket2);
+
+	reactorSocket1.rotateX(45 * Math.PI / 180);
+	reactorSocket1.rotateZ(45 * Math.PI / 180);
+    reactorSocket1.position.set(-0.2, 0.15, 0);
+	reactorSocket2.rotateX(45 * Math.PI / 180);
+	reactorSocket2.rotateZ(45 * Math.PI / 180);
+    reactorSocket2.position.set(0, 0.15, 0.2);
+	
+
 	scene.add( heroSphere );
 
 	heroSphere.position.y=heroBaseY;
@@ -349,7 +367,7 @@ function createTree(){
 	var tiers=6;
 	var scalarMultiplier=(Math.random()*(0.25-0.1))+0.05;
 	var treeGeometry = new THREE.ConeGeometry( 0.5, 1, sides, tiers);
-	var treeMaterial = new THREE.MeshStandardMaterial( { color: 0x242424,shading:THREE.FlatShading  } );
+	var treeMaterial = new THREE.MeshStandardMaterial( { color: 0x0a0a0a,shading:THREE.FlatShading  } );
 	midPointVector=treeGeometry.vertices[0].clone();
 	blowUpTree(treeGeometry.vertices,sides,0,scalarMultiplier);
 	tightenTree(treeGeometry.vertices,sides,1);
