@@ -131,6 +131,7 @@ function addRankingBox() {
     rankText.innerHTML = "<p>scoreboard</p>";
     rankText.style.top = 0 + 'px';
     rankText.style.left = 0 + 'px';
+	rankText.id = 'rankBox';
     document.body.appendChild(rankText);
 }
 
