@@ -346,15 +346,15 @@ function addWorldRocks() {
 
 function addRock(inPath, row, isLeft) {
 	var newRock;
-	if (inPath) { //피해야하는 장애물
+	if (inPath) {
 		if (rocksPool.length == 0) return;
 		newRock = rocksPool.pop();
 		newRock.visible = true;
 		rocksInPath.push(newRock);
 		sphericalHelper.set(worldRadius - 0.3, pathAngleValues[row], -rollingGroundSphere.rotation.x + 4);
-	} else { //안피해도 되는 사이드 장애물
+	} else {
 		newRock = createRock();
-		var forestAreaAngle = 0;//[1.52,1.57,1.62];
+		var forestAreaAngle = 0;
 		if (isLeft) {
 			forestAreaAngle = 1.68 + Math.random() * 0.1;
 		} else {
@@ -477,7 +477,7 @@ function update() {
 	}
 	else flag++;
 	render();
-	animationFrame = requestAnimationFrame(update);//request next update
+	animationFrame = requestAnimationFrame(update);
 }
 function doRockLogic() {
 	var oneRock;
@@ -486,10 +486,10 @@ function doRockLogic() {
 	rocksInPath.forEach(function (element, index) {
 		oneRock = rocksInPath[index];
 		rockPos.setFromMatrixPosition(oneRock.matrixWorld);
-		if (rockPos.z > 6 && oneRock.visible) {//gone out of our view zone
+		if (rockPos.z > 6 && oneRock.visible) {
 			rocksToRemove.push(oneRock);
-		} else {//check collision
-			if (rockPos.distanceTo(heroSphere.position) <= 0.6) { //장애물 부딪히는 감도
+		} else {
+			if (rockPos.distanceTo(heroSphere.position) <= 0.6) {
 				continueAnimate = false;
 				hasCollided = true;
 				explode();
@@ -560,7 +560,7 @@ function shipSplash() {
 }
 function render() {
 	water.render();
-	renderer.render(scene, camera);//draw
+	renderer.render(scene, camera);
 }
 function gameOver() {
 	cancelAnimationFrame(animationFrame);
@@ -582,7 +582,6 @@ function gameOver() {
 }
 
 function onWindowResize() {
-	//resize & align
 	sceneHeight = window.innerHeight;
 	sceneWidth = window.innerWidth;
 	renderer.setSize(sceneWidth, sceneHeight);
