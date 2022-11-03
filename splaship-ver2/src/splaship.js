@@ -108,7 +108,7 @@ function createScene(){
 	scoreText.style.position = 'absolute';
 	scoreText.style.width = 100;
 	scoreText.style.height = 100;
-	scoreText.innerHTML = "0";
+	scoreText.innerHTML = "Your Score : 0";
 	scoreText.style.top = 30 + 'px';
 	scoreText.style.left = 100 + 'px';
 	document.body.appendChild(scoreText);
@@ -172,7 +172,6 @@ function addExplosion(){
 }
 
 function addSplash(){
-	console.log("in splash!!");
 	splashGeometry = new THREE.Geometry();
 	for (var i = 0; i < splashCount; i ++ ) {
 	   var vertex = new THREE.Vector3();
@@ -331,7 +330,6 @@ function addTree(inPath, row, isLeft){
 		if(treesPool.length==0)return;
 		newTree=treesPool.pop();
 		newTree.visible=true;
-		//console.log("add tree");
 		treesInPath.push(newTree);
 		sphericalHelper.set( worldRadius-0.3, pathAngleValues[row], -rollingGroundSphere.rotation.x+4 );
 	}else{ //안피해도 되는 사이드 장애물
@@ -451,11 +449,8 @@ function update(){
     bounceValue-=gravity;
 	if(levelClock.getElapsedTime() > 10) {
 		levelClock.start();
-		console.log("level up")
 		treeReleaseInterval -= 0.03;
 		rollingSpeed += 0.0002
-		console.log(treeReleaseInterval);
-		console.log(rollingSpeed);
 	}
     if(clock.getElapsedTime()>treeReleaseInterval){
     	clock.start();
@@ -469,7 +464,7 @@ function update(){
 		}
 
     	if(!hasCollided){
-			score+=parseInt(2*treeReleaseInterval);
+			score+=1;
 			scoreText.innerHTML=`Your Score : ` + score.toString();
 		}
     }
@@ -477,12 +472,9 @@ function update(){
     doTreeLogic();
     doExplosionLogic();
 	doSplashLogic();
-   console.log(particles);
-   console.log(splashParticles);
    if(flag==splashGap) {
       shipSplash();
       flag = 0;
-      console.log("splash");
    }
    else flag++;
     render();
@@ -499,7 +491,6 @@ function doTreeLogic(){
 			treesToRemove.push(oneTree);
 		}else{//check collision
 			if(treePos.distanceTo(heroSphere.position)<=0.6){ //장애물 부딪히는 감도
-				console.log("hit");
 				continueAnimate = false;
 				hasCollided=true;
 				explode();
@@ -514,7 +505,6 @@ function doTreeLogic(){
 		treesInPath.splice(fromWhere,1);
 		treesPool.push(oneTree);
 		oneTree.visible=false;
-		console.log("remove tree");
 	});
 }
 function doExplosionLogic(){
