@@ -12,9 +12,7 @@ var orbitControl;
 var rollingGroundSphere;
 var heroSphere;
 var rollingSpeed = 0.005;
-var heroRollingSpeed;
 var worldRadius = 26;
-var heroRadius = 0.2;
 var sphericalHelper;
 var pathAngleValues;
 var heroBaseY = 1.6;
@@ -64,7 +62,6 @@ function createScene() {
 	clock.start();
 	levelClock = new THREE.Clock();
 	levelClock.start();
-	heroRollingSpeed = (rollingSpeed * worldRadius / heroRadius) / 5;
 	sphericalHelper = new THREE.Spherical();
 	pathAngleValues = [1.52, 1.57, 1.62];
 	sceneWidth = window.innerWidth;
@@ -206,7 +203,7 @@ function handleKeyDown(keyEvent) {
 	if (jumping) return;
 	shipSplash();
 	var validMove = true;
-	if (keyEvent.keyCode === 37) {//left
+	if (keyEvent.keyCode === 37) {
 		if (currentLane == middleLane) {
 			currentLane = leftLane;
 		} else if (currentLane == rightLane) {
@@ -214,7 +211,7 @@ function handleKeyDown(keyEvent) {
 		} else {
 			validMove = false;
 		}
-	} else if (keyEvent.keyCode === 39) {//right
+	} else if (keyEvent.keyCode === 39) {
 		if (currentLane == middleLane) {
 			currentLane = rightLane;
 		} else if (currentLane == leftLane) {
@@ -302,7 +299,6 @@ function addWorld() {
 	waterNormals.wrapS = THREE.RepeatWrapping;
 	waterNormals.wrapT = THREE.RepeatWrapping;
 
-	// Create the water effect
 	water = new THREE.Water(renderer, camera, scene, {
 		textureWidth: 1024,
 		textureHeight: 1024,
@@ -332,7 +328,6 @@ function addLight() {
 	sun.position.set(-600, 300, 600);
 	sun.castShadow = true;
 	scene.add(sun);
-	//Set up shadow properties for the sun light
 	sun.shadow.mapSize.width = 256;
 	sun.shadow.mapSize.height = 256;
 	sun.shadow.camera.near = 0.5;
@@ -384,21 +379,12 @@ function createTree() {
 	midPointVector = treeGeometry.vertices[0].clone();
 	blowUpTree(treeGeometry.vertices, sides, 0, scalarMultiplier);
 	tightenTree(treeGeometry.vertices, sides, 1);
-	//blowUpTree(treeGeometry.vertices,sides,2,scalarMultiplier*1.1,true);
-	//tightenTree(treeGeometry.vertices,sides,3);
-	//blowUpTree(treeGeometry.vertices,sides,4,scalarMultiplier*1.2);
-	//tightenTree(treeGeometry.vertices,sides,5);
 	var treeTop = new THREE.Mesh(treeGeometry, treeMaterial);
 	treeTop.castShadow = true;
 	treeTop.receiveShadow = false;
 	treeTop.position.y = 0.2;
 	treeTop.rotation.y = (Math.random() * (Math.PI));
-	//var treeTrunkGeometry = new THREE.CylinderGeometry( 0.1, 0.1,0.5);
-	//var trunkMaterial = new THREE.MeshStandardMaterial( { color: 0x886633,shading:THREE.FlatShading  } );
-	//var treeTrunk = new THREE.Mesh( treeTrunkGeometry, trunkMaterial );
-	//treeTrunk.position.y=0.25;
 	var tree = new THREE.Object3D();
-	//tree.add(treeTrunk);
 	tree.add(treeTop);
 	return tree;
 }
