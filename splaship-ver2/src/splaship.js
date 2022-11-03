@@ -396,18 +396,6 @@ function createTree(){
 	return tree;
 }
 
-function createObstacle(){
-	const loader = new THREE.GLTFLoader();
-		loader.load('./model/scene.gltf', function(gltf){
-		  running = gltf.scene.children[0];
-		  running.scale.set(0.3,0.3,0.3);
-		  running.position.set(5,5,-3200);
-		  scene.add(gltf.scene);
-		  }, undefined, function (error) {
-			console.error(error);
-		});
-	return
-}
 function blowUpTree(vertices,sides,currentTier,scalarMultiplier,odd){
 	var vertexIndex;
 	var vertexVector= new THREE.Vector3();
