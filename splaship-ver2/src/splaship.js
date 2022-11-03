@@ -39,13 +39,13 @@ var splashParticles;
 var explosionPower =1.06;
 var particles;
 var scoreText;
-var score;
-var hasCollided;
+var score = 0;
+var hasCollided=false;
 var light;
 var water;
 var splashGap=40;
 
-var flag;
+var flag=0;
 var animationFrame;
 var continueAnimate = true;
 
@@ -58,9 +58,6 @@ function init() {
 }
 
 function createScene(){
-	hasCollided=false;
-	score=0;
-	flag=0;
 	treesInPath=[];
 	treesPool=[];
 	clock=new THREE.Clock();
@@ -72,12 +69,10 @@ function createScene(){
 	pathAngleValues=[1.52,1.57,1.62];
     sceneWidth=window.innerWidth;
     sceneHeight=window.innerHeight;
-    scene = new THREE.Scene();//the 3d scene
-    //scene.fog = new THREE.FogExp2( 0x242424, 0.14 );
-    camera = new THREE.PerspectiveCamera( 70, sceneWidth / sceneHeight, 0.1, 5000000 );//perspective camera
-    renderer = new THREE.WebGLRenderer({alpha:true});//renderer with transparent backdrop
+    scene = new THREE.Scene();
+    renderer = new THREE.WebGLRenderer({alpha:true});
     renderer.setClearColor(0x424242, 1); 
-    renderer.shadowMap.enabled = true;//enable shadow
+    renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.setSize( sceneWidth, sceneHeight );
     dom = document.getElementById('TutContainer');
@@ -89,30 +84,30 @@ function createScene(){
 	addSky();
 	addExplosion();
 	addSplash();
-	camera.position.z = 6.5;
-	camera.position.y = 3.5;
-	orbitControl = new THREE.OrbitControls( camera, renderer.domElement );//helper to rotate around in scene
-	orbitControl.addEventListener( 'change', render );
-	orbitControl.noKeys = true;
-	orbitControl.noPan = true;
-	orbitControl.enableZoom = false;
+	addCamera();
+	addScoreBox();
+	addRankingBox();
 	
-	window.addEventListener('resize', onWindowResize, false);//resize callback
-
+	window.addEventListener('resize', onWindowResize, false);
 	document.onkeydown = handleKeyDown;
-	
-	scoreText = document.createElement('div');
-	scoreText.style.color='white'
-	scoreText.style.fontSize='30px'
-	scoreText.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-	scoreText.style.position = 'absolute';
-	scoreText.style.width = 100;
-	scoreText.style.height = 100;
-	scoreText.innerHTML = "Your Score : 0";
-	scoreText.style.top = 30 + 'px';
-	scoreText.style.left = 100 + 'px';
-	document.body.appendChild(scoreText);
+}
 
+function addScoreBox() {
+	scoreText = document.createElement('div');
+	scoreText.style.color='white';
+	scoreText.style.fontSize='80px';
+	scoreText.style.textAlign='center';
+	scoreText.style.fontWeight='bold';
+	scoreText.style.textShadow='4px 4px 4px black';
+	scoreText.style.position = 'absolute';
+	scoreText.style.width = '100%';
+	scoreText.style.height = 100;
+	scoreText.innerHTML = "Score : 0";
+	scoreText.style.top = 30 + 'px';
+	document.body.appendChild(scoreText);
+}
+
+function addRankingBox() {
 	rankText = document.createElement('div');
 	rankText.style.color='white'
 	rankText.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
@@ -120,10 +115,22 @@ function createScene(){
 	rankText.style.width = 100;
 	rankText.style.height = 100;
 	rankText.innerHTML = "<p>scoreboard</p>";
-	rankText.style.top = 100 + 'px';
-	rankText.style.left = 100 + 'px';
+	rankText.style.top = 0 + 'px';
+	rankText.style.left = 0 + 'px';
 	document.body.appendChild(rankText);
-	
+}
+
+function addCamera() {
+	camera = new THREE.PerspectiveCamera( 70, sceneWidth / sceneHeight, 0.1, 5000000 );
+	camera.position.z = 6.5;
+	camera.position.y = 3.5;
+	orbitControl = new THREE.OrbitControls( camera, renderer.domElement );
+	orbitControl.addEventListener( 'change', render );
+	orbitControl.noKeys = true;
+	orbitControl.noPan = false;
+	orbitControl.enableZoom = false;
+	orbitControl.enablePan = false;
+	orbitControl.enableRotate = false;
 }
 
 function addSky() {
@@ -471,7 +478,7 @@ function update(){
 
     	if(!hasCollided){
 			score+=1;
-			scoreText.innerHTML=`Your Score : ` + score.toString();
+			scoreText.innerHTML=`Score : ` + score.toString();
 		}
     }
 	water.material.uniforms.time.value += 1.0 / 100.0;
