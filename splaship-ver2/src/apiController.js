@@ -9,7 +9,10 @@ function getTopScore() {
             paragraph += "</p>";
         }
         rankText.innerHTML = paragraph;
-    });
+    })
+    .catch(() => {
+        rankText.innerHTML = "<b>off-line mode</b><br>";
+    })
 }
 
 function setNewScore(name, newScore) {
